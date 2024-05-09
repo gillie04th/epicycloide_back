@@ -13,11 +13,11 @@ public class Epicycloid {
 
     private float radius;
 
-    @OneToOne(cascade = { CascadeType.PERSIST, CascadeType.MERGE })
+    @OneToOne(cascade = { CascadeType.ALL })
     @JoinColumn(name = "rolling_id")
     private Epicycloid rolling;
 
-    @OneToOne(mappedBy = "rolling", cascade = { CascadeType.PERSIST, CascadeType.MERGE })
+    @OneToOne(mappedBy = "rolling", cascade = { CascadeType.ALL })
     @JsonIgnore
     private Epicycloid fixed;
 
