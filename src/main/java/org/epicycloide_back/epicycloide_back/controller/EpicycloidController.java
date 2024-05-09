@@ -3,6 +3,7 @@ package org.epicycloide_back.epicycloide_back.controller;
 import org.epicycloide_back.epicycloide_back.model.Epicycloid;
 import org.epicycloide_back.epicycloide_back.service.IEpicycloidService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -23,14 +24,17 @@ public class EpicycloidController {
     @GetMapping("/{id}")
     @ResponseBody
     public Epicycloid getEpicycloidById(@PathVariable int id) {
-//        long numericId = Long.parseLong(id);
+
         return epicycloidService.getEpicycloidById(id);
+
     }
 
     @GetMapping("/name/{name}")
     @ResponseBody
     public Epicycloid getEpicycloidByName(@PathVariable String name) {
+
         return epicycloidService.getEpicycloidByName(name);
+
     }
 
     @PostMapping("")
@@ -41,30 +45,48 @@ public class EpicycloidController {
 
     }
 
-    @PutMapping("/{id}")
+    @PatchMapping("/{id}")
     @ResponseBody
-    public void updateEpicycloid(@PathVariable int id, @RequestBody Epicycloid epicycloid) {
+    public ResponseEntity<Epicycloid> updateEpicycloid(@PathVariable int id, @RequestBody Epicycloid updated) {
 
-//        long numericId = Long.parseLong(id);
-        Epicycloid resource = epicycloidService.getEpicycloidById(id);
+        Epicycloid existing = epicycloidService.getEpicycloidById(id);
 
-        if (resource != null) {
-            resource.setFixed(epicycloid.getFixed());
-            resource.setRadius(epicycloid.getRadius());
-            resource.setRolling(epicycloid.getRolling());
-            epicycloidService.saveEpicycloid(resource);
-        } else {
-            epicycloidService.saveEpicycloid(epicycloid);
-        }
+        patchUpdate(existing, updated);
 
+        epicycloidService.saveEpicycloid(existing);
+
+        return ResponseEntity.ok(existing);
     }
 
     @DeleteMapping("/{id}")
     @ResponseBody
     public void deleteEpicycloidBy(@PathVariable int id) {
-//        long numericId = Long.parseLong(id);
+
         epicycloidService.deleteEpicycloid(id);
+
     }
 
+    private void patchUpdate(Epicycloid existing, Epicycloid updated) {
+        if (existing != null) {
+            if (updated.getId() > 0) {
+                existing.setId(updated.getId());
+            }
+            if (updated.getRadius() > 0) {
+                existing.setRadius(updated.getRadius());
+            }
+            if (updated.getName() != null) {
+                existing.setName(updated.getName());
+            }
+            if (updated.getFrequency() > 0) {
+                existing.setFrequency(updated.getFrequency());
+            }
+            if (updated.getRolling() != null) {
+                patchUpdate(existing.getRolling(), updated.getRolling());
+            }
+            if (updated.getFixed() != null) {
+                patchUpdate(existing.getFixed(), updated.getFixed());
+            }
+        }
+    }
 
 }

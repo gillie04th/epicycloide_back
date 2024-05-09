@@ -1,21 +1,33 @@
 package org.epicycloide_back.epicycloide_back.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
 @Entity
 public class Epicycloid {
 
-    private @Id @GeneratedValue int id;
+    @Id
+    @GeneratedValue
+    @Column(name = "id")
+    private int id;
 
     private float radius;
 
-    @OneToOne(mappedBy = "fixed", cascade = CascadeType.ALL)
+    @OneToOne(cascade = { CascadeType.PERSIST, CascadeType.MERGE })
+    @JoinColumn(name = "rolling_id")
     private Epicycloid rolling;
 
-    @OneToOne(cascade = CascadeType.ALL)
+    @OneToOne(mappedBy = "rolling", cascade = { CascadeType.PERSIST, CascadeType.MERGE })
+    @JsonIgnore
     private Epicycloid fixed;
 
     private String name;
+
+    @Column(nullable = true)
+    private float frequency;
+
+
+
 
     public void setId(int id) {
         this.id = id;
@@ -55,5 +67,13 @@ public class Epicycloid {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public float getFrequency() {
+        return frequency;
+    }
+
+    public void setFrequency(float frequency) {
+        this.frequency = frequency;
     }
 }

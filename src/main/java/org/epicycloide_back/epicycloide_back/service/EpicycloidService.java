@@ -4,6 +4,7 @@ import org.epicycloide_back.epicycloide_back.model.Epicycloid;
 import org.epicycloide_back.epicycloide_back.repository.EpicycloidRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -14,6 +15,7 @@ public class EpicycloidService implements IEpicycloidService {
     private EpicycloidRepository epicycloidRepository;
 
     @Override
+    @Transactional(readOnly = true)
     public Epicycloid getEpicycloidById(int id) {
         return epicycloidRepository.findById(id);
     }
@@ -25,7 +27,7 @@ public class EpicycloidService implements IEpicycloidService {
 
     @Override
     public List<Epicycloid> getAllEpicycloid() {
-        return epicycloidRepository.findAll();
+        return epicycloidRepository.findAll().stream().filter(e -> e.getRolling() != null && e.getFixed() == null).toList();
     }
 
     @Override
