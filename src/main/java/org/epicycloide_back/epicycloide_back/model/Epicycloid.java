@@ -102,14 +102,10 @@ public class Epicycloid {
                     x += rolling.getRadius() * Math.cos(t);
                     y += rolling.getRadius() * Math.sin(t);
 
-                    System.out.println("first");
-
                 } else {
 
                     x += rolling.getRadius() * Math.cos(frequencySum / baseFrequency * t);
                     y += rolling.getRadius() * Math.sin(frequencySum / baseFrequency * t);
-
-                    System.out.println("others");
 
                 }
 
