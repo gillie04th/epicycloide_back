@@ -1,13 +1,17 @@
 package org.epicycloide_back.epicycloide_back.controller;
 
 import org.epicycloide_back.epicycloide_back.model.Epicycloid;
+import org.epicycloide_back.epicycloide_back.model.Point;
 import org.epicycloide_back.epicycloide_back.service.IEpicycloidService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
+@CrossOrigin
 @RestController
 @RequestMapping(path = "/epicycloid")
 public class EpicycloidController {
@@ -34,6 +38,14 @@ public class EpicycloidController {
     public Epicycloid getEpicycloidByName(@PathVariable String name) {
 
         return epicycloidService.getEpicycloidByName(name);
+
+    }
+
+    @GetMapping("/{id}/{pointsNumber}")
+    @ResponseBody
+    public ArrayList<Point> getEpicycloidCoordinates(@PathVariable int id, @PathVariable int pointsNumber) {
+
+        return epicycloidService.getEpicycloidById(id).getCoordinates(pointsNumber);
 
     }
 
