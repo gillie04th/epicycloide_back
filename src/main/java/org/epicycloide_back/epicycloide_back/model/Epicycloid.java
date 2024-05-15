@@ -2,9 +2,11 @@ package org.epicycloide_back.epicycloide_back.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
+import org.epicycloide_back.epicycloide_back.validation.GreaterThan;
+import org.springframework.validation.annotation.Validated;
 
+import javax.validation.Valid;
 import java.util.ArrayList;
-import java.util.HashMap;
 
 @Entity
 public class Epicycloid {
@@ -14,19 +16,23 @@ public class Epicycloid {
     @Column(name = "id")
     private int id;
 
+    @GreaterThan(limit=0.0)
     private float radius;
 
     @OneToOne(cascade = {CascadeType.ALL})
     @JoinColumn(name = "rolling_id")
+    @Valid
     private Epicycloid rolling;
 
     @OneToOne(mappedBy = "rolling", cascade = {CascadeType.ALL})
     @JsonIgnore
+    @Valid
     private Epicycloid fixed;
 
     private String name;
 
     @Column(nullable = true)
+    @GreaterThan(limit = 0.0)
     private float frequency;
 
 
