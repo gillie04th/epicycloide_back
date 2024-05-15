@@ -2,9 +2,10 @@ package org.epicycloide_back.epicycloide_back.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
-
+import jakarta.validation.Valid;
+import org.epicycloide_back.epicycloide_back.validation.GreaterThan;
+import org.springframework.validation.annotation.Validated;
 import java.util.ArrayList;
-import java.util.HashMap;
 
 @Entity
 public class Epicycloid {
@@ -14,20 +15,24 @@ public class Epicycloid {
     @Column(name = "id")
     private int id;
 
-    private float radius;
+    @GreaterThan(limit=0.0)
+    private Double radius;
 
     @OneToOne(cascade = {CascadeType.ALL})
     @JoinColumn(name = "rolling_id")
+    @Valid
     private Epicycloid rolling;
 
     @OneToOne(mappedBy = "rolling", cascade = {CascadeType.ALL})
     @JsonIgnore
+    @Valid
     private Epicycloid fixed;
 
     private String name;
 
     @Column(nullable = true)
-    private float frequency;
+    @GreaterThan(limit = 0.0)
+    private Double frequency;
 
 
     public void setId(int id) {
@@ -38,11 +43,11 @@ public class Epicycloid {
         return id;
     }
 
-    public float getRadius() {
+    public Double getRadius() {
         return radius;
     }
 
-    public void setRadius(float radius) {
+    public void setRadius(Double radius) {
         this.radius = radius;
     }
 
@@ -70,11 +75,11 @@ public class Epicycloid {
         this.name = name;
     }
 
-    public float getFrequency() {
+    public Double getFrequency() {
         return frequency;
     }
 
-    public void setFrequency(float frequency) {
+    public void setFrequency(Double frequency) {
         this.frequency = frequency;
     }
 
