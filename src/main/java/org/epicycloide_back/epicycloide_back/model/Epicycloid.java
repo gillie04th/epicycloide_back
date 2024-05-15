@@ -2,10 +2,9 @@ package org.epicycloide_back.epicycloide_back.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
+import jakarta.validation.Valid;
 import org.epicycloide_back.epicycloide_back.validation.GreaterThan;
 import org.springframework.validation.annotation.Validated;
-
-import javax.validation.Valid;
 import java.util.ArrayList;
 
 @Entity
@@ -17,7 +16,7 @@ public class Epicycloid {
     private int id;
 
     @GreaterThan(limit=0.0)
-    private float radius;
+    private Double radius;
 
     @OneToOne(cascade = {CascadeType.ALL})
     @JoinColumn(name = "rolling_id")
@@ -33,7 +32,7 @@ public class Epicycloid {
 
     @Column(nullable = true)
     @GreaterThan(limit = 0.0)
-    private float frequency;
+    private Double frequency;
 
 
     public void setId(int id) {
@@ -44,11 +43,11 @@ public class Epicycloid {
         return id;
     }
 
-    public float getRadius() {
+    public Double getRadius() {
         return radius;
     }
 
-    public void setRadius(float radius) {
+    public void setRadius(Double radius) {
         this.radius = radius;
     }
 
@@ -76,11 +75,11 @@ public class Epicycloid {
         this.name = name;
     }
 
-    public float getFrequency() {
+    public Double getFrequency() {
         return frequency;
     }
 
-    public void setFrequency(float frequency) {
+    public void setFrequency(Double frequency) {
         this.frequency = frequency;
     }
 

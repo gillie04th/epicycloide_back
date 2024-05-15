@@ -1,5 +1,6 @@
 package org.epicycloide_back.epicycloide_back.controller;
 
+import jakarta.validation.Valid;
 import org.epicycloide_back.epicycloide_back.model.Epicycloid;
 import org.epicycloide_back.epicycloide_back.model.Point;
 import org.epicycloide_back.epicycloide_back.service.IEpicycloidService;
@@ -7,8 +8,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-
-import javax.validation.Valid;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -60,7 +59,7 @@ public class EpicycloidController {
 
     @PostMapping("")
     @ResponseBody
-    public void insertEpicycloid(@RequestBody Epicycloid epicycloid) throws Exception{
+    public void insertEpicycloid(@RequestBody @Valid Epicycloid epicycloid) throws Exception{
 
         epicycloidService.saveEpicycloid(epicycloid);
 
