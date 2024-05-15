@@ -41,11 +41,19 @@ public class EpicycloidController {
 
     }
 
-    @GetMapping("/{id}/{pointsNumber}")
+    @GetMapping("/{id}/coordinates/{pointsNumber}")
     @ResponseBody
-    public ArrayList<Point> getEpicycloidCoordinates(@PathVariable int id, @PathVariable int pointsNumber) {
+    public ArrayList<Point> getEpicycloidCoordinatesById(@PathVariable int id, @PathVariable int pointsNumber) {
 
         return epicycloidService.getEpicycloidById(id).getCoordinates(pointsNumber);
+
+    }
+
+    @PostMapping("/coordinates/{pointsNumber}")
+    @ResponseBody
+    public ArrayList<Point> getEpicycloidCoordinates(@RequestBody Epicycloid epicycloid, @PathVariable int pointsNumber) {
+
+        return epicycloid.getCoordinates(pointsNumber);
 
     }
 
