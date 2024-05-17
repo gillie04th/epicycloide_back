@@ -5,7 +5,10 @@ import jakarta.persistence.*;
 import jakarta.validation.Valid;
 import org.epicycloide_back.epicycloide_back.validation.GreaterThan;
 import org.springframework.validation.annotation.Validated;
+import org.epicycloide_back.epicycloide_back.util.FractionConverter;
+
 import java.util.ArrayList;
+import java.util.HashMap;
 
 @Entity
 public class Epicycloid {
@@ -15,8 +18,14 @@ public class Epicycloid {
     @Column(name = "id")
     private int id;
 
-    @GreaterThan(limit=0.0)
+    private String name;
+
+    @GreaterThan(limit = 0.0)
     private Double radius;
+
+    @Column(nullable = true)
+    @GreaterThan(limit = 0.0)
+    private Double frequency;
 
     @OneToOne(cascade = {CascadeType.ALL})
     @JoinColumn(name = "rolling_id")
@@ -27,12 +36,6 @@ public class Epicycloid {
     @JsonIgnore
     @Valid
     private Epicycloid fixed;
-
-    private String name;
-
-    @Column(nullable = true)
-    @GreaterThan(limit = 0.0)
-    private Double frequency;
 
 
     public void setId(int id) {
@@ -89,32 +92,39 @@ public class Epicycloid {
 
         for (double i = 0; i < pointsNumber; i++) {
 
-            double t = (double) 2 * Math.PI * i / pointsNumber;
-
             Epicycloid rolling = this;
+            Epicycloid fixed = null;
             double baseFrequency = rolling.getFrequency();
 
             double x = 0;
             double y = 0;
+//            double t = 0;
             double frequencySum = 0;
+
+            double t = (double) 2 * Math.PI * i / pointsNumber;
 
             while (rolling != null) {
 
+
                 frequencySum += rolling.getFrequency();
 
-                if(rolling.getFixed() == null) {
+                if (fixed == null) {
 
+//                    t = (double) 2 * Math.PI * i / pointsNumber;
                     x += rolling.getRadius() * Math.cos(t);
                     y += rolling.getRadius() * Math.sin(t);
 
                 } else {
 
+//                    FractionConverter.decimalToFraction(rolling.getRadius() / rolling.getFixed().getRadius())[1] *
+//                    t = (double) 2 * Math.PI * i / pointsNumber;
                     x += rolling.getRadius() * Math.cos(frequencySum / baseFrequency * t);
                     y += rolling.getRadius() * Math.sin(frequencySum / baseFrequency * t);
 
                 }
 
                 rolling = rolling.getRolling();
+                fixed = rolling;
             }
 
             Point point = new Point(x, y, t);
@@ -126,4 +136,8 @@ public class Epicycloid {
 
     }
 
+    @Override
+    public String toString() {
+        return "Epicycloid [id=" + id + ", name=" + name + ", radius=" + radius + ", frequency=" + frequency + ", rolling=" + rolling;
+    }
 }
