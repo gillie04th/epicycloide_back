@@ -96,28 +96,40 @@ public class Epicycloid {
             Epicycloid fixed = null;
             double baseFrequency = rolling.getFrequency();
 
+            double frequencyRatioSum = 1;
+            long multiplier = 1;
+
+            Epicycloid epi = rolling;
+            Epicycloid epiF = null;
+
+            while (epi != null) {
+                if (epi != rolling) {
+                    frequencyRatioSum *= epi.getFrequency() / epiF.getFrequency();
+                }
+                if(epi.getRolling() == null) {
+                    multiplier = FractionConverter.decimalToFraction(frequencyRatioSum)[1];
+                }
+                epiF = epi;
+                epi = epi.getRolling();
+            }
+
+            double t = (double) multiplier * 2 * Math.PI * i / pointsNumber;
+
+            double frequencySum = 0;
             double x = 0;
             double y = 0;
-//            double t = 0;
-            double frequencySum = 0;
-
-            double t = (double) 2 * Math.PI * i / pointsNumber;
 
             while (rolling != null) {
-
 
                 frequencySum += rolling.getFrequency();
 
                 if (fixed == null) {
 
-//                    t = (double) 2 * Math.PI * i / pointsNumber;
                     x += rolling.getRadius() * Math.cos(t);
                     y += rolling.getRadius() * Math.sin(t);
 
                 } else {
 
-//                    FractionConverter.decimalToFraction(rolling.getRadius() / rolling.getFixed().getRadius())[1] *
-//                    t = (double) 2 * Math.PI * i / pointsNumber;
                     x += rolling.getRadius() * Math.cos(frequencySum / baseFrequency * t);
                     y += rolling.getRadius() * Math.sin(frequencySum / baseFrequency * t);
 
