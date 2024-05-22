@@ -53,7 +53,6 @@ public class EpicycloidController {
     @ResponseBody
     public ArrayList<Point> getEpicycloidCoordinates(@RequestBody Epicycloid epicycloid, @PathVariable int pointsNumber) {
 
-        System.out.println(epicycloid);
         return epicycloid.getCoordinates(pointsNumber);
 
     }

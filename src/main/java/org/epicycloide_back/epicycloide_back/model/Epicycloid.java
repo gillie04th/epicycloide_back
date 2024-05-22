@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.Valid;
 import org.epicycloide_back.epicycloide_back.validation.GreaterThan;
+import org.springframework.boot.context.properties.bind.DefaultValue;
 import org.springframework.validation.annotation.Validated;
 import org.epicycloide_back.epicycloide_back.util.FractionConverter;
 
@@ -23,9 +24,13 @@ public class Epicycloid {
     @GreaterThan(limit = 0.0)
     private Double radius;
 
-    @Column(nullable = true)
+    @Column(nullable = false)
     @GreaterThan(limit = 0.0)
     private Double frequency;
+
+    @Column(nullable = true)
+    private Double phase;
+
 
     @OneToOne(cascade = {CascadeType.ALL})
     @JoinColumn(name = "rolling_id")
@@ -86,6 +91,14 @@ public class Epicycloid {
         this.frequency = frequency;
     }
 
+    public Double getPhase() {
+        return phase;
+    }
+
+    public void setPhase(Double phase) {
+        this.phase = phase;
+    }
+
     public ArrayList<Point> getCoordinates(int pointsNumber) {
 
         ArrayList<Point> coordinates = new ArrayList<Point>();
@@ -125,13 +138,13 @@ public class Epicycloid {
 
                 if (fixed == null) {
 
-                    x += rolling.getRadius() * Math.cos(t);
-                    y += rolling.getRadius() * Math.sin(t);
+                    x += rolling.getRadius() * Math.cos(t + rolling.getPhase());
+                    y += rolling.getRadius() * Math.sin(t + rolling.getPhase());
 
                 } else {
 
-                    x += rolling.getRadius() * Math.cos(frequencySum / baseFrequency * t);
-                    y += rolling.getRadius() * Math.sin(frequencySum / baseFrequency * t);
+                    x += rolling.getRadius() * Math.cos(frequencySum / baseFrequency * t + rolling.getPhase());
+                    y += rolling.getRadius() * Math.sin(frequencySum / baseFrequency * t + rolling.getPhase());
 
                 }
 
