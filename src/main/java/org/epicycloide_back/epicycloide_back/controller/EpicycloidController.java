@@ -57,6 +57,14 @@ public class EpicycloidController {
 
     }
 
+    @PostMapping("/transform/{precision}")
+    @ResponseBody
+    public Epicycloid getTransformation(@RequestBody  ArrayList<Point> points, @PathVariable int precision) {
+
+        return Epicycloid.transform(points, precision);
+
+    }
+
     @PostMapping("")
     @ResponseBody
     public void insertEpicycloid(@RequestBody @Valid Epicycloid epicycloid) throws Exception{

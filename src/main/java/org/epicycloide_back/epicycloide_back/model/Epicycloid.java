@@ -3,6 +3,7 @@ package org.epicycloide_back.epicycloide_back.model;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.Valid;
+import org.apache.commons.math4.transform.FastHadamardTransform;
 import org.epicycloide_back.epicycloide_back.validation.GreaterThan;
 import org.springframework.boot.context.properties.bind.DefaultValue;
 import org.springframework.validation.annotation.Validated;
@@ -159,6 +160,11 @@ public class Epicycloid {
 
         return coordinates;
 
+    }
+
+    public static Epicycloid transform(ArrayList<Point> points, int precision) {
+
+        return new Epicycloid();
     }
 
     @Override
