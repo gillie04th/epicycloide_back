@@ -64,6 +64,12 @@
             <artifactId>spring-boot-starter-validation</artifactId>
         </dependency>
 
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-math3</artifactId>
+            <version>3.6.1</version> <!-- Vérifiez la dernière version disponible -->
+        </dependency>
+
     </dependencies>
 
     <build>

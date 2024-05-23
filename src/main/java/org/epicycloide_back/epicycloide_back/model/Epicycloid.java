@@ -3,14 +3,15 @@ package org.epicycloide_back.epicycloide_back.model;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.Valid;
-import org.apache.commons.math4.transform.FastHadamardTransform;
+import org.apache.commons.math3.transform.DftNormalization;
+import org.apache.commons.math3.transform.FastFourierTransformer;
+import org.apache.commons.math3.complex.Complex;
+import org.apache.commons.math3.transform.TransformType;
 import org.epicycloide_back.epicycloide_back.validation.GreaterThan;
-import org.springframework.boot.context.properties.bind.DefaultValue;
-import org.springframework.validation.annotation.Validated;
 import org.epicycloide_back.epicycloide_back.util.FractionConverter;
 
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Arrays;
 
 @Entity
 public class Epicycloid {
@@ -26,7 +27,7 @@ public class Epicycloid {
     private Double radius;
 
     @Column(nullable = false)
-    @GreaterThan(limit = 0.0)
+//    @GreaterThan(limit = 0.0)
     private Double frequency;
 
     @Column(nullable = true)
@@ -43,6 +44,14 @@ public class Epicycloid {
     @Valid
     private Epicycloid fixed;
 
+    public Epicycloid() {
+    }
+
+    public Epicycloid(double frequency, double radius, double phase) {
+        this.frequency = frequency;
+        this.radius = radius;
+        this.phase = phase;
+    }
 
     public void setId(int id) {
         this.id = id;
@@ -120,7 +129,7 @@ public class Epicycloid {
                 if (epi != rolling) {
                     frequencyRatioSum *= epi.getFrequency() / epiF.getFrequency();
                 }
-                if(epi.getRolling() == null) {
+                if (epi.getRolling() == null) {
                     multiplier = FractionConverter.decimalToFraction(frequencyRatioSum)[1];
                 }
                 epiF = epi;
@@ -164,7 +173,59 @@ public class Epicycloid {
 
     public static Epicycloid transform(ArrayList<Point> points, int precision) {
 
-        return new Epicycloid();
+        double[][] data = new double[points.size()][2];
+        int index = 0;
+        for (Point point : points) {
+            data[index++] = new double[]{point.getX(), point.getY()};
+        }
+
+        double[] flatPoints = new double[data.length * 2];
+        int index2 = 0;
+        for (double[] point : data) {
+            flatPoints[index2++] = point[0];
+            flatPoints[index2++] = point[1];
+        }
+
+        int newSize = 1 << (int) (Math.ceil(Math.log10(flatPoints.length) / Math.log10(2)));
+        if (newSize > flatPoints.length) {
+            flatPoints = Arrays.copyOf(flatPoints, newSize);
+        }
+
+        FastFourierTransformer fft = new FastFourierTransformer(DftNormalization.STANDARD);
+
+        Complex[] fftResult = fft.transform(flatPoints, TransformType.FORWARD);
+
+        for (Complex result : fftResult) {
+            System.out.println("Re: " + result.getReal() + ", Im: " + result.getImaginary());
+        }
+
+        // Calcul de la fréquence d'échantillonnage
+        double fs = precision; // Exemple de fréquence d'échantillonnage
+
+        Epicycloid epicycloid = new Epicycloid();
+        Epicycloid rolling = null;
+
+        // Affichage des résultats
+        for (int k = 0; k < precision; ++k) {
+            double freq = k * fs / fftResult.length;
+            double mag = fftResult[k].abs(); // Amplitude
+            double phase = fftResult[k].getArgument(); // Phase en radians
+
+            System.out.printf("Fréquence: %.2f Hz, Amplitude: %.2f, Phase: %.2f rad\n", freq, mag, phase);
+
+            Epicycloid newEpicycloid = new Epicycloid(freq, mag, phase);
+
+            if (k == 0) {
+                epicycloid = newEpicycloid;
+                rolling = epicycloid;
+            } else {
+                rolling.setRolling(newEpicycloid);
+                rolling = newEpicycloid;
+            }
+        }
+
+
+        return epicycloid;
     }
 
     @Override
