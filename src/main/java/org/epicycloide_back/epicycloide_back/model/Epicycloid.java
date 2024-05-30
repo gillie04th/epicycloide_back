@@ -12,7 +12,10 @@ import org.apache.commons.math3.util.ArithmeticUtils;
 import org.epicycloide_back.epicycloide_back.validation.GreaterThan;
 import org.epicycloide_back.epicycloide_back.util.FractionConverter;
 
-import java.util.ArrayList;
+import java.math.BigDecimal;
+import java.math.MathContext;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Entity
 public class Epicycloid {
@@ -63,7 +66,7 @@ public class Epicycloid {
     }
 
     public Double getRadius() {
-        return radius;
+        return radius != null ? radius : 0;
     }
 
     public void setRadius(Double radius) {
@@ -95,7 +98,7 @@ public class Epicycloid {
     }
 
     public Double getFrequency() {
-        return frequency;
+        return frequency != null ? frequency : 0;
     }
 
     public void setFrequency(Double frequency) {
@@ -103,7 +106,7 @@ public class Epicycloid {
     }
 
     public Double getPhase() {
-        return phase;
+        return phase != null ? phase : 0;
     }
 
     public void setPhase(Double phase) {
@@ -149,13 +152,15 @@ public class Epicycloid {
 
                 if (fixed == null) {
 
-                    x += rolling.getRadius() * Math.cos(t + rolling.getPhase());
-                    y += rolling.getRadius() * Math.sin(t + rolling.getPhase());
+                    x += rolling.getRadius() * -Math.cos(rolling.getFrequency() * t + rolling.getPhase());
+                    y += rolling.getRadius() * Math.sin(rolling.getFrequency() * t + rolling.getPhase());
 
                 } else {
 
-                    x += rolling.getRadius() * Math.cos(frequencySum / baseFrequency * t + rolling.getPhase());
-                    y += rolling.getRadius() * Math.sin(frequencySum / baseFrequency * t + rolling.getPhase());
+                    x += rolling.getRadius() * -Math.cos((rolling.getFrequency()) * t + rolling.getPhase());
+                    y += rolling.getRadius() * Math.sin((rolling.getFrequency()) * t + rolling.getPhase());
+//                    x += rolling.getRadius() * Math.cos(frequencySum / baseFrequency * (t + rolling.getPhase()));
+//                    y += rolling.getRadius() * Math.sin(frequencySum / baseFrequency * (t + rolling.getPhase()));
 
                 }
 
@@ -170,70 +175,6 @@ public class Epicycloid {
 
         return coordinates;
 
-    }
-
-    public static Epicycloid transform(ArrayList<Point> points, int precision) {
-
-        FastFourierTransformer fft = new FastFourierTransformer(DftNormalization.STANDARD);
-
-        Complex[] pointsArray = points.stream()
-                .map(point -> new Complex(point.getX(), point.getY()))
-                .toArray(Complex[]::new);
-
-        Complex[] fftResult = new Complex[0];
-
-        try {
-            fftResult = fft.transform(pointsArray, TransformType.FORWARD);
-
-//        System.out.println(fftResult.length);
-
-//        for (Complex result : fftResult) {
-//            System.out.println("Re: " + result.getReal() + ", Im: " + result.getImaginary());
-//        }
-
-            System.out.println("Re: " + fftResult[0].getReal() + ", Im: " + fftResult[0].getImaginary());
-            System.out.println("Re: " + fftResult[1].getReal() + ", Im: " + fftResult[1].getImaginary());
-            System.out.println("Re: " + fftResult[2].getReal() + ", Im: " + fftResult[2].getImaginary());
-            System.out.println("Re: " + fftResult[3].getReal() + ", Im: " + fftResult[3].getImaginary());
-            System.out.println("Re: " + fftResult[4].getReal() + ", Im: " + fftResult[4].getImaginary());
-            System.out.println("Re: " + fftResult[5].getReal() + ", Im: " + fftResult[5].getImaginary());
-            System.out.println("Re: " + fftResult[6].getReal() + ", Im: " + fftResult[6].getImaginary());
-            System.out.println("Re: " + fftResult[7].getReal() + ", Im: " + fftResult[7].getImaginary());
-
-
-            Epicycloid epicycloid = new Epicycloid();
-            Epicycloid rolling = null;
-
-            int maxLength = Math.min(precision * 2, fftResult.length);
-
-            // Affichage des résultats
-            for (int k = 1; k < maxLength; ++k) {
-                double freq = (k + 1) % 2 == 0 ? (k / 2) + 1 : -(k + 1) / 2;
-                double radius = Math.sqrt(
-                        Math.pow(fftResult[k].getReal(), 2) + Math.pow(fftResult[k].getImaginary(), 2)
-                );
-
-                double phase = fftResult[k].getArgument();
-
-//            System.out.printf("Fréquence: %.2f, Amplitude: %.2f, Phase: %.2f°\n", freq, radius, phase);
-
-                Epicycloid newEpicycloid = new Epicycloid(freq, radius, phase);
-
-                if (k == 1) {
-                    epicycloid = newEpicycloid;
-                    rolling = epicycloid;
-                } else {
-                    rolling.setRolling(newEpicycloid);
-                    rolling = newEpicycloid;
-                }
-            }
-
-            return epicycloid;
-
-        } catch (MathIllegalArgumentException exception) {
-            points.add(new Point(0, 0, 0));
-            return transform(points, precision);
-        }
     }
 
     @Override
