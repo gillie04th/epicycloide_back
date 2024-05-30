@@ -189,7 +189,7 @@ public class EpicycloidController {
             int index = n > 0 ? n * 2 - 2 : (n < 0 ? -n * 2 -1 : 0);
 
             if(n != 0) {
-                System.out.println("index: " + index + ", n: " + n + ", sum: " + sum);
+//                System.out.println("index: " + index + ", n: " + n + ", sum: " + sum);
                 fftResult[index] = sum;
             }
         }
